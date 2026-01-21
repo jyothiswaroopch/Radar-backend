@@ -8,6 +8,7 @@ const { getHistory } = require('./src/controllers/historyController');
 const { getWatchlist, addToWatchlist, removeFromWatchlist } = require('./src/controllers/watchlistController');
 const { loginUser, getUserSettings, updatePreference } = require('./src/controllers/userController');
 const { getOrderBook } = require('./src/controllers/depthController');
+const { getStatus } = require('./src/controllers/statusController');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,6 +33,7 @@ app.get('/api/user/settings', getUserSettings);
 app.put('/api/user/settings', updatePreference);
 
 app.get('/api/depth', getOrderBook);
+app.get('/api/status', getStatus);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
