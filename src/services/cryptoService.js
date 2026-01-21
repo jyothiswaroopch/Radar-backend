@@ -32,5 +32,24 @@ const fetchCryptoHistory = async (id) => {
     }
 };
 
-module.exports = { fetchCryptoData, fetchCryptoHistory };
+const fetchOrderBook = async (id) => {
+    try {
+        const url = `https://api.coingecko.com/api/v3/coins/${id}/tickers`;
+        const response = await axios.get(url);
+        
+        const market = response.data.tickers[0]; 
+        
+        return {
+            symbol: market.base,
+            exchange: market.market.name,
+            spread_percentage: market.bid_ask_spread_percentage,
+            last_trade: market.last,
+            volume: market.volume,
+            trust_score: market.trust_score
+        };
+    } catch (error) {
+        return null;
+    }
+};
 
+module.exports = { fetchCryptoData, fetchCryptoHistory, fetchOrderBook };
