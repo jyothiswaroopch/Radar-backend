@@ -22,4 +22,16 @@ const normalizeStock = (data) => {
     }));
 };
 
-module.exports = { normalizeCrypto, normalizeStock };
+const normalizeForex = (data) => {
+    return data.map(pair => ({
+        id: pair.ticker,
+        symbol: pair.ticker,
+        name: pair.name,
+        price: (pair.bid + pair.ask) / 2,
+        change_24h: pair.change,
+        image: null,
+        type: 'FOREX'
+    }));
+};
+
+module.exports = { normalizeCrypto, normalizeStock, normalizeForex };

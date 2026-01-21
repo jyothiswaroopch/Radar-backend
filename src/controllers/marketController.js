@@ -1,7 +1,8 @@
 const NodeCache = require('node-cache');
 const { fetchCryptoData } = require('../services/cryptoService');
 const { fetchStockData } = require('../services/stockService');
-const { normalizeCrypto, normalizeStock } = require('../utils/normalizer');
+const { fetchForexData } = require('../services/forexService');
+const { normalizeCrypto, normalizeStock, normalizeForex } = require('../utils/normalizer');
 
 const cache = new NodeCache({ stdTTL: 60 });
 
@@ -13,15 +14,17 @@ const getMarketData = async (req, res) => {
 
         if (!combinedData) {
             console.log("Fetching new data...");
-            const [rawCrypto, rawStocks] = await Promise.all([
+            const [rawCrypto, rawStocks, rawForex] = await Promise.all([
                 fetchCryptoData(),
-                fetchStockData()
+                fetchStockData(),
+                fetchForexData()
             ]);
 
             const cleanCrypto = normalizeCrypto(rawCrypto);
             const cleanStocks = normalizeStock(rawStocks);
+            const cleanForex = normalizeForex(rawForex);
             
-            combinedData = [...cleanCrypto, ...cleanStocks];
+            combinedData = [...cleanCrypto, ...cleanStocks, ...cleanForex];
             cache.set("allMarketData", combinedData);
         }
 
