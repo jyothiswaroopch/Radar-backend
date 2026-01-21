@@ -43,4 +43,52 @@ const calculateRSI = (data, period = 14) => {
     return rsiArray;
 };
 
-module.exports = { calculateSMA, calculateRSI };
+const calculateBollinger = (data, period = 20) => {
+    if (data.length < period) return [];
+    const bands = [];
+
+    for (let i = period - 1; i < data.length; i++) {
+        const slice = data.slice(i - period + 1, i + 1);
+        const mean = slice.reduce((a, b) => a + b.price, 0) / period;
+
+        const squaredDiffs = slice.map(item => Math.pow(item.price - mean, 2));
+        const variance = squaredDiffs.reduce((a, b) => a + b, 0) / period;
+        const stdDev = Math.sqrt(variance);
+
+        bands.push({
+            date: data[i].date,
+            upper: (mean + stdDev * 2).toFixed(2),
+            middle: mean.toFixed(2),
+            lower: (mean - stdDev * 2).toFixed(2)
+        });
+    }
+    return bands;
+};
+
+const calculateEMA = (data, period) => {
+    const k = 2 / (period + 1);
+    const emaArray = [data[0].price];
+    for (let i = 1; i < data.length; i++) {
+        emaArray.push(data[i].price * k + emaArray[i - 1] * (1 - k));
+    }
+    return emaArray;
+};
+
+const calculateMACD = (data) => {
+    if (data.length < 26) return [];
+
+    const ema12 = calculateEMA(data, 12);
+    const ema26 = calculateEMA(data, 26);
+
+    const macd = [];
+    for (let i = 25; i < data.length; i++) {
+        macd.push({
+            date: data[i].date,
+            value: (ema12[i] - ema26[i]).toFixed(2),
+            signal: 0
+        });
+    }
+    return macd;
+};
+
+module.exports = { calculateSMA, calculateRSI, calculateBollinger, calculateMACD };

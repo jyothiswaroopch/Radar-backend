@@ -15,10 +15,12 @@ const normalizeStock = (data) => {
         id: stock.symbol,
         symbol: stock.symbol,
         name: stock.name,
-        price: stock.close,
+        price: stock.price,
         change_24h: stock.change,
         image: null,
-        type: 'STOCK'
+        type: 'STOCK',
+        details: stock.details,
+        financials: stock.financials
     }));
 };
 

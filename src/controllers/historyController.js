@@ -1,5 +1,5 @@
 const { fetchCryptoHistory } = require('../services/cryptoService');
-const { calculateSMA, calculateRSI } = require('../utils/indicators');
+const { calculateSMA, calculateRSI, calculateBollinger, calculateMACD } = require('../utils/indicators');
 
 const getHistory = async (req, res) => {
     const { symbol } = req.query;
@@ -8,14 +8,13 @@ const getHistory = async (req, res) => {
 
     const rawData = await fetchCryptoHistory(symbol.toLowerCase());
 
-    const smaData = calculateSMA(rawData, 20);
-    const rsiData = calculateRSI(rawData, 14);
-
     res.json({
         prices: rawData,
         indicators: {
-            sma: smaData,
-            rsi: rsiData
+            sma: calculateSMA(rawData, 20),
+            rsi: calculateRSI(rawData, 14),
+            bollinger: calculateBollinger(rawData, 20),
+            macd: calculateMACD(rawData)
         }
     });
 };
