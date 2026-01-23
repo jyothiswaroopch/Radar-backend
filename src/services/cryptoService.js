@@ -10,7 +10,16 @@ const fetchCryptoData = async () => {
         };
 
         const response = await axios.get(url, { params });
-        return response.data;
+        
+        return response.data.map(coin => ({
+            ...coin,
+            details: {
+                sector: "Blockchain",
+                market_cap: `$${(coin.market_cap / 1e9).toFixed(2)}B`,
+                about: `A decentralized digital currency based on ${coin.id} blockchain.`,
+                volume: `$${(coin.total_volume / 1e6).toFixed(2)}M`
+            }
+        }));
     } catch (error) {
         return [];
     }

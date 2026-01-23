@@ -1,3 +1,5 @@
+const { generateHistory } = require('../utils/mockGenerator');
+
 const fetchStockData = async () => {
     await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -83,4 +85,17 @@ const fetchStockData = async () => {
     ];
 };
 
-module.exports = { fetchStockData };
+const fetchStockHistory = async (symbol) => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    const mockPrices = {
+        'aapl': 175,
+        'tsla': 240,
+        'nvda': 460
+    };
+
+    const basePrice = mockPrices[symbol] || 100;
+    return generateHistory(basePrice, 0.03); 
+};
+
+module.exports = { fetchStockData, fetchStockHistory };
