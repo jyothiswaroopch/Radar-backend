@@ -85,7 +85,7 @@ const fetchStockData = async () => {
     ];
 };
 
-const fetchStockHistory = async (symbol) => {
+const fetchStockHistory = async (symbol, interval = '1D') => {
     await new Promise(resolve => setTimeout(resolve, 200));
 
     const mockPrices = {
@@ -95,7 +95,7 @@ const fetchStockHistory = async (symbol) => {
     };
 
     const basePrice = mockPrices[symbol] || 100;
-    return generateHistory(basePrice, 0.03); 
+    return generateHistory(basePrice, 0.03, interval); 
 };
 
 module.exports = { fetchStockData, fetchStockHistory };

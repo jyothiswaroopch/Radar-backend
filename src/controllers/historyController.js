@@ -4,20 +4,20 @@ const { fetchForexHistory } = require('../services/forexService');
 const { calculateSMA, calculateRSI, calculateBollinger, calculateMACD } = require('../utils/indicators');
 
 const getHistory = async (req, res) => {
-    const { symbol, type } = req.query; 
+    const { symbol, type, interval = '1D' } = req.query; 
     
     if (!symbol) return res.status(400).json({ error: "Symbol required" });
 
     let rawData = [];
 
     if (type === 'STOCK') {
-        rawData = await fetchStockHistory(symbol.toLowerCase());
+        rawData = await fetchStockHistory(symbol.toLowerCase(), interval);
     } 
     else if (type === 'FOREX') {
-        rawData = await fetchForexHistory(symbol.toLowerCase());
+        rawData = await fetchForexHistory(symbol.toLowerCase(), interval);
     } 
     else {
-        rawData = await fetchCryptoHistory(symbol.toLowerCase());
+        rawData = await fetchCryptoHistory(symbol.toLowerCase(), interval);
     }
 
     if (!rawData || rawData.length === 0) {

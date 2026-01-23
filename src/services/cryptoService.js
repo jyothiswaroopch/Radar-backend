@@ -25,15 +25,18 @@ const fetchCryptoData = async () => {
     }
 };
 
-const fetchCryptoHistory = async (id) => {
+const fetchCryptoHistory = async (id, interval = '1D') => {
     try {
         const url = `https://api.coingecko.com/api/v3/coins/${id}/market_chart`;
-        const params = { vs_currency: 'usd', days: '30', interval: 'daily' };
+        
+        const days = interval === '1H' || interval === '15M' ? '1' : '30';
+        
+        const params = { vs_currency: 'usd', days: days };
         
         const response = await axios.get(url, { params });
         
         return response.data.prices.map(item => ({
-            date: new Date(item[0]).toLocaleDateString(),
+            date: new Date(item[0]).toLocaleString(),
             price: item[1]
         }));
     } catch (error) {

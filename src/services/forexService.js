@@ -46,14 +46,14 @@ const fetchForexData = async () => {
     ];
 };
 
-const fetchForexHistory = async (symbol) => {
+const fetchForexHistory = async (symbol, interval = '1D') => {
     const mockPrices = {
         'eur/usd': 1.08,
         'gbp/usd': 1.27,
         'usd/jpy': 148.20
     };
     const basePrice = mockPrices[symbol] || 1.0;
-    return generateHistory(basePrice, 0.005); 
+    return generateHistory(basePrice, 0.005, interval); 
 };
 
 module.exports = { fetchForexData, fetchForexHistory };
