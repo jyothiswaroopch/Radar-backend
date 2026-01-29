@@ -18,8 +18,9 @@ const UserSchema = new mongoose.Schema({
     },
     watchlist: [{
         symbol: String,
+        name: String,
         assetType: {
-            type: String, 
+            type: String,
             enum: ['STOCK', 'CRYPTO', 'FOREX']
         },
         addedAt: {
@@ -33,7 +34,7 @@ const UserSchema = new mongoose.Schema({
     }
 });
 
-UserSchema.pre('save', async function(next) {
+UserSchema.pre('save', async function (next) {
     if (!this.isModified('password')) {
         next();
     }
@@ -41,7 +42,7 @@ UserSchema.pre('save', async function(next) {
     this.password = await bcrypt.hash(this.password, salt);
 });
 
-UserSchema.methods.matchPassword = async function(enteredPassword) {
+UserSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 

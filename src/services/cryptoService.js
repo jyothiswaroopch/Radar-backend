@@ -9,8 +9,14 @@ const fetchCryptoData = async () => {
             order: 'market_cap_desc'
         };
 
-        const response = await axios.get(url, { params });
-        
+        const response = await axios.get(url, {
+            params,
+            timeout: 4000,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        });
+
         return response.data.map(coin => ({
             ...coin,
             details: {
@@ -25,39 +31,44 @@ const fetchCryptoData = async () => {
     }
 };
 
-const fetchCryptoHistory = async (id, interval = '1D') => {
+const fetchCryptoHistory = async (symbol, interval) => {
     try {
-        const url = `https://api.coingecko.com/api/v3/coins/${id}/market_chart`;
+        const coinId = symbol.toLowerCase() === 'btc' ? 'bitcoin' : 'ethereum';
+        const days = interval === '1M' ? 30 : 1;
         
-        const days = interval === '1H' || interval === '15M' ? '1' : '30';
-        
-        const params = { vs_currency: 'usd', days: days };
-        
-        const response = await axios.get(url, { params });
-        
-        return response.data.prices.map(item => ({
-            date: new Date(item[0]).toLocaleString(),
-            price: item[1]
+        const url = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`;
+        const response = await axios.get(url, {
+            params: { vs_currency: 'usd', days: days },
+            timeout: 4000,
+            headers: {
+                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        });
+
+        return response.data.prices.map(price => ({
+            date: new Date(price[0]).toLocaleTimeString(),
+            price: price[1]
         }));
     } catch (error) {
         return [];
     }
 };
 
-const fetchOrderBook = async (id) => {
+const fetchOrderBook = async (symbol) => {
     try {
-        const url = `https://api.coingecko.com/api/v3/coins/${id}/tickers`;
-        const response = await axios.get(url);
-        
-        const market = response.data.tickers[0]; 
+        const coinId = symbol.toLowerCase() === 'btc' ? 'bitcoin' : 'ethereum';
+        const url = `https://api.coingecko.com/api/v3/coins/${coinId}/depth`;
+         const response = await axios.get(url, {
+            params: { vs_currency: 'usd', limit: 5 },
+             timeout: 4000,
+            headers: {
+                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        });
         
         return {
-            symbol: market.base,
-            exchange: market.market.name,
-            spread_percentage: market.bid_ask_spread_percentage,
-            last_trade: market.last,
-            volume: market.volume,
-            trust_score: market.trust_score
+            bids: response.data.bids,
+            asks: response.data.asks
         };
     } catch (error) {
         return null;

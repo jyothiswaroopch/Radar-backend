@@ -51,33 +51,24 @@ const loginUser = async (req, res) => {
 };
 
 const getUserProfile = async (req, res) => {
-    const { userId } = req.query; 
-
-    const user = await User.findById(userId);
-    if (user) {
-        res.json({
-            _id: user._id,
-            username: user.username,
-            preferredMode: user.preferredMode,
-            watchlist: user.watchlist
-        });
-    } else {
-        res.status(404).json({ error: 'User not found' });
-    }
+    // Protected route: req.user is set
+    res.json({
+        _id: req.user._id,
+        username: req.user.username,
+        preferredMode: req.user.preferredMode,
+        watchlist: req.user.watchlist
+    });
 };
 
 const updateMode = async (req, res) => {
-    const { userId, mode } = req.body;
+    const { mode } = req.body;
 
-    const user = await User.findById(userId);
+    // Protected route: req.user is set
+    const user = req.user;
 
-    if (user) {
-        user.preferredMode = mode;
-        await user.save();
-        res.json({ message: "Mode updated", preferredMode: user.preferredMode });
-    } else {
-        res.status(404).json({ error: 'User not found' });
-    }
+    user.preferredMode = mode;
+    await user.save();
+    res.json({ message: "Mode updated", preferredMode: user.preferredMode });
 };
 
 module.exports = { registerUser, loginUser, getUserProfile, updateMode };

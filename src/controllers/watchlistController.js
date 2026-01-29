@@ -1,17 +1,8 @@
 const User = require('../models/User');
 
 const getWatchlist = async (req, res) => {
-    const { userId } = req.query;
-
-    if (!userId) {
-        return res.status(400).json({ error: "User ID is required" });
-    }
-
     try {
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
+        const user = req.user; // Attached by authMiddleware
         res.json(user.watchlist);
     } catch (error) {
         res.status(500).json({ error: "Server error" });
@@ -19,17 +10,14 @@ const getWatchlist = async (req, res) => {
 };
 
 const addToWatchlist = async (req, res) => {
-    const { userId, symbol, assetType, name } = req.body;
+    const { symbol, assetType, name } = req.body;
 
-    if (!userId || !symbol || !assetType) {
+    if (!symbol || !assetType) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
     try {
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
+        const user = req.user;
 
         const exists = user.watchlist.find(item => item.symbol === symbol);
         if (exists) {
@@ -48,17 +36,9 @@ const addToWatchlist = async (req, res) => {
 
 const removeFromWatchlist = async (req, res) => {
     const { symbol } = req.params;
-    const { userId } = req.query;
-
-    if (!userId) {
-        return res.status(400).json({ error: "User ID is required" });
-    }
 
     try {
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
+        const user = req.user;
 
         user.watchlist = user.watchlist.filter(item => item.symbol !== symbol);
         await user.save();
